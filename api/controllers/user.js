@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const ash = require('../utils/asyncHandler');
 
 module.exports.getAllUsers = ash(async (req, res, next) => {
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
     const users = await User.findAll();
 
     return res.status(200).json({
@@ -13,6 +13,7 @@ module.exports.getAllUsers = ash(async (req, res, next) => {
         users: users.map(user => ({
             id: user.id,
             username: user.username,
+            type: user.type,
             createdAt: user.createdAt
         }))
     });
@@ -31,7 +32,8 @@ module.exports.userSignIn = ash(async (req, res, next) => {
     const token = jwt.sign(
         {
             username: user.username,
-            userId: user.id
+            userId: user.id,
+            type: user.type,
         },
         process.env.JWT_KEY,
         {
@@ -54,6 +56,7 @@ module.exports.userSignUp = ash(async (req, res, next) => {
     await User.create({
         username: req.body.username,
         password: await bcrypt.hash(req.body.password, 10),
+        type: req.body.type,
     });
     
     return res.status(201).json({ message: 'User created successfully' });
