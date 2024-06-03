@@ -22,5 +22,7 @@ const connect = async () => {
 module.exports = {
     sequelize,
     User: require('./api/models/user')(sequelize),
+    Question: require('./api/models/question')(sequelize),
+    Answer: require('./api/models/answer')(sequelize),
     connect,
 }
